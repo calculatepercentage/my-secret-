@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Stream Videos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0d0d0d;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+    }
+
+    /* Header */
+    header {
+      background: #1f1f1f;
+      padding: 15px 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #00acee;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    /* Video Container */
+    #videoList {
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .video-container {
+      background: #1a1a1a;
+      border-radius: 12px;
+      overflow: hidden;
+      width: 95%;
+      margin: 0 auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    iframe {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border: none;
+      display: block;
+    }
+
+    .mp4-link {
+      display: block;
+      background: #007bff;
+      color: #fff;
+      text-align: center;
+      padding: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      border-top: 1px solid #333;
+      transition: background 0.3s;
+    }
+
+    .mp4-link:hover {
+      background: #005fcc;
+    }
+
+    /* Responsive tweaks */
+    @media (min-width: 768px) {
+      #videoList {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .video-container {
+        width: 45%;
+        max-width: 500px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>🎬 My Streamtape Video Gallery</header>
+
+  <div id="videoList"></div>
+
+  <script>
+    const fileURL = "https://raw.githubusercontent.com/calculatepercentage/my-secret-/main/your.txt";
+
+    fetch(fileURL)
+      .then(res => res.text())
+      .then(text => {
+        const links = text.split("\n").map(x => x.trim()).filter(Boolean);
+        const container = document.getElementById("videoList");
+
+        links.forEach(link => {
+          const id = link.split("/v/")[1]?.split("/")[0];
+          if (!id) return;
+
+          const embedUrl = `https://streamtape.com/e/${id}/`;
+
+          const html = `
+            <div class="video-container">
+              <iframe src="${embedUrl}" allowfullscreen></iframe>
+              <a href="${link}" class="mp4-link" target="_blank">📥 Download Video</a>
+            </div>
+          `;
+          container.insertAdjacentHTML("beforeend", html);
+        });
+      })
+      .catch(err => {
+        console.error("Error:", err);
+        document.getElementById("videoList").innerHTML = "<p style='text-align:center;color:red;'>❌ Failed to load videos.</p>";
+      });
+  </script>
+
+</body>
+</html>
