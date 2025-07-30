@@ -1,125 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>My Stream Videos</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secret Video Stream</title>
   <style>
-    /* Reset */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      background: #0d0d0d;
-      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #111;
       color: #fff;
+      font-family: 'Segoe UI', sans-serif;
     }
 
-    /* Header */
     header {
-      background: #1f1f1f;
-      padding: 15px 20px;
+      background-color: #1f1f1f;
+      padding: 15px;
       text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #00acee;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      font-size: 1.5em;
+      color: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     }
 
-    /* Video Container */
-    #videoList {
-      padding: 20px 10px;
+    .grid {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      align-items: center;
+      gap: 25px;
+      padding: 20px;
     }
 
-    .video-container {
-      background: #1a1a1a;
+    .card {
+      width: 95%;
+      max-width: 900px;
+      background-color: #000;
       border-radius: 12px;
       overflow: hidden;
-      width: 95%;
-      margin: 0 auto;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 15px rgba(255,255,255,0.08);
+      transition: transform 0.3s ease;
+      position: relative;
     }
 
-    iframe {
+    .card:hover {
+      transform: scale(1.01);
+    }
+
+    .video-wrapper {
+      position: relative;
       width: 100%;
-      aspect-ratio: 16/9;
+      padding-top: 56.25%; /* 16:9 aspect ratio */
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
       border: none;
-      display: block;
     }
 
-    .mp4-link {
-      display: block;
-      background: #007bff;
-      color: #fff;
-      text-align: center;
-      padding: 12px;
-      text-decoration: none;
-      font-weight: 600;
-      border-top: 1px solid #333;
-      transition: background 0.3s;
-    }
-
-    .mp4-link:hover {
-      background: #005fcc;
-    }
-
-    /* Responsive tweaks */
-    @media (min-width: 768px) {
-      #videoList {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .video-container {
-        width: 45%;
-        max-width: 500px;
+    @media (max-width: 600px) {
+      .grid {
+        padding: 10px;
+        gap: 15px;
       }
     }
   </style>
 </head>
+
 <body>
 
-  <header>🎬 My Streamtape Video Gallery</header>
+  <!-- Header -->
+  <header>Secret Video Stream</header>
 
-  <div id="videoList"></div>
+  <!-- Video List -->
+  <div class="grid" id="videoGrid">Loading videos...</div>
 
   <script>
-    const fileURL = "https://raw.githubusercontent.com/calculatepercentage/my-secret-/main/your.txt";
+    const txtUrl = "https://raw.githubusercontent.com/calculatepercentage/my-secret-/main/your.txt"; 
+    const videoGrid = document.getElementById("videoGrid");
 
-    fetch(fileURL)
+    fetch(txtUrl)
       .then(res => res.text())
       .then(text => {
-        const links = text.split("\n").map(x => x.trim()).filter(Boolean);
-        const container = document.getElementById("videoList");
+        const codes = text.split("\n").map(c => c.trim()).filter(Boolean);
+        if (!codes.length) {
+          videoGrid.textContent = "No videos found.";
+          return;
+        }
 
-        links.forEach(link => {
-          const id = link.split("/v/")[1]?.split("/")[0];
-          if (!id) return;
+        videoGrid.innerHTML = "";
+        codes.forEach(code => {
+          const card = document.createElement("div");
+          card.className = "card";
 
-          const embedUrl = `https://streamtape.com/e/${id}/`;
+          const wrapper = document.createElement("div");
+          wrapper.className = "video-wrapper";
 
-          const html = `
-            <div class="video-container">
-              <iframe src="${embedUrl}" allowfullscreen></iframe>
-              <a href="${link}" class="mp4-link" target="_blank">📥 Download Video</a>
-            </div>
-          `;
-          container.insertAdjacentHTML("beforeend", html);
+          const iframe = document.createElement("iframe");
+          iframe.src = `https://xhamster.com/embed/${code}`;
+          iframe.allowFullscreen = true;
+
+          wrapper.appendChild(iframe);
+          card.appendChild(wrapper);
+          videoGrid.appendChild(card);
         });
       })
       .catch(err => {
-        console.error("Error:", err);
-        document.getElementById("videoList").innerHTML = "<p style='text-align:center;color:red;'>❌ Failed to load videos.</p>";
+        console.error(err);
+        videoGrid.textContent = "Failed to load videos.";
       });
   </script>
 
